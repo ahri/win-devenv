@@ -1,6 +1,8 @@
 #!/bin/sh
 
-if [ -f ~/.project-setup-completed ]; then
+watch_file="$HOME/provisioning/.project-setup-completed"
+
+if [ -f "$watch_file" ]; then
     exit 0
 fi
 
@@ -12,6 +14,7 @@ echo "First login with ssh agent: running project setup..."
 
 set -uex
 
+mkdir -p ~/repos
 cd ~/repos
 npm install -g jshint mocha chromedriver
 
@@ -31,4 +34,4 @@ if [ $safe_to_replace_ssh_config -eq 1 ]; then
     rm -f "$HOME/.ssh/config"
 fi
 
-touch ~/.project-setup-completed
+touch "$watch_file"

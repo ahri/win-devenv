@@ -45,15 +45,15 @@ Vagrant.configure(2) do |config|
     vb.memory = "1024"
   end
 
-  config.vm.provision "file", source: "node-provisioning.sh", destination: "node-provisioning.sh"
-  config.vm.provision "file", source: "editor-provisioning.sh", destination: "editor-provisioning.sh"
-  config.vm.provision "file", source: "project-setup.sh", destination: "project-setup.sh"
-  config.vm.provision "file", source: "entrypoint.sh", destination: "entrypoint.sh"
+  config.vm.provision "file", source: "provisioning/node-provisioning.sh", destination: "provisioning/node-provisioning.sh"
+  config.vm.provision "file", source: "provisioning/editor-provisioning.sh", destination: "provisioning/editor-provisioning.sh"
+  config.vm.provision "file", source: "provisioning/project-setup.sh", destination: "provisioning/project-setup.sh"
+  config.vm.provision "file", source: "provisioning/entrypoint.sh", destination: "provisioning/entrypoint.sh"
 
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
     set -uex
-    chmod 755 *.sh
-    ./entrypoint.sh
+    chmod 755 provisioning/*.sh
+    ./provisioning/entrypoint.sh
   SHELL
 
   config.ssh.forward_agent = true
