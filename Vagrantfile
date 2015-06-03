@@ -45,25 +45,15 @@ Vagrant.configure(2) do |config|
     vb.memory = "1024"
   end
 
+  config.vm.provision "file", source: "node-provisioning.sh", destination: "node-provisioning.sh"
+  config.vm.provision "file", source: "editor-provisioning.sh", destination: "editor-provisioning.sh"
+  config.vm.provision "file", source: "project-setup.sh", destination: "project-setup.sh"
+  config.vm.provision "file", source: "entrypoint.sh", destination: "entrypoint.sh"
 
-  config.vm.provision "shell", inline: <<-SHELL
-    set -xue
-
-    apt-get update -q
-    curl -s https://raw.githubusercontent.com/ahri/dotfiles/master/bootstrap-new-linux.sh | bash
-
-    su - vagrant -c "mkdir ~vagrant/nodejs && cd ~vagrant/nodejs && wget -q https://iojs.org/dist/v2.1.0/iojs-v2.1.0-linux-x64.tar.gz && tar zxvf iojs-v2.1.0-linux-x64.tar.gz && echo 'export PATH=\\"\\\$HOME/nodejs/iojs-v2.1.0-linux-x64/bin:\\\$PATH\\"' >> ~/.profile"
-    apt-get install -y chromium-browser firefox
-    # https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    # dpkg -i google-chrome-stable_current_amd64.deb
-
-    # get a decent editor running
-    su - vagrant -c "mkdir ~vagrant/repos/"
-    su - vagrant -c "git clone https://github.com/ahri/dotfiles.git ~vagrant/repos/dotfiles"
-    su - vagrant -c "cd ~vagrant/repos/dotfiles && rake"
-
-    apt-get clean
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    set -uex
+    chmod 755 *.sh
+    ./entrypoint.sh
   SHELL
 
   config.ssh.forward_agent = true
